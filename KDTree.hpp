@@ -24,7 +24,8 @@ class KDNode {
    public:
     using KDNodePtr = std::shared_ptr< KDNode >;
     size_t index;
-    point_t x;
+    point_t x;  // vertex
+    point_t n;  // vertex normal
     KDNodePtr left;
     KDNodePtr right;
 
