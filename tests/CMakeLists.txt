@@ -7,3 +7,6 @@ target_link_libraries(error_test KDTree)
 
 add_executable(toy_test toy_test.cpp)
 target_link_libraries(toy_test KDTree)
+
+add_executable(read_mesh read_mesh.cpp)
+target_link_libraries(read_mesh KDTree)
