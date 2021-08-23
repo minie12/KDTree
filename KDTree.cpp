@@ -155,6 +155,10 @@ KDTree::KDTree(pointVec point_array) {
     root = KDTree::make_tree(begin, end, length, level);
 }
 
+KDTree::KDTree(pointVec point_array, pointVec normal_array) {
+    //TO DO
+}
+
 KDNodePtr KDTree::nearest_(   //
     const KDNodePtr &branch,  //
     const point_t &pt,        //
