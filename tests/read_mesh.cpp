@@ -65,7 +65,7 @@ int main() {
   pointVec normals;
 
   // read mesh file
-  std::string file_name = "/home/daeun/devel/tspArt/KDTree/input/curved_surface.obj";
+  std::string file_name = "../../input/curved_surface.obj";
   tie(points, normals) = readMesh(file_name);
 
   // print out the points and normals
