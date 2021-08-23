@@ -68,6 +68,9 @@ int main() {
   std::string file_name = "../../input/curved_surface.obj";
   tie(points, normals) = readMesh(file_name);
 
+  // make KDTree
+  KDTree tree(points);
+
   // print out the points and normals
   for (size_t i = 0 ; i < points.size() ; i ++) {
     std::cout << i << "th :" ;
