@@ -10,6 +10,15 @@ Simple C++ static KD-Tree implementation with minimal functionality.
 	- nearest neighbor
 	- neighbors within a given distance
 
+## Build and compile
+
+```shell
+mkdir build && cd build
+cmake ..
+make -j4
+```
+This will generate the executable files in `build/bin` directory. 
+
 ## License and copyright
 
 © J. Frederico Carvalho
