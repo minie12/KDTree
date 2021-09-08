@@ -19,6 +19,7 @@
 using point_t = std::vector< double >;
 using indexArr = std::vector< size_t >;
 using pointIndex = typename std::pair< std::vector< double >, size_t >;
+using pointNormalIndex = typename std::pair< pointIndex , std::vector< double > >;
 
 class KDNode {
    public:
@@ -34,6 +35,7 @@ class KDNode {
     KDNode(const point_t &, const size_t &, const KDNodePtr &,
            const KDNodePtr &);
     KDNode(const pointIndex &, const KDNodePtr &, const KDNodePtr &);
+    KDNode(const pointNormalIndex &, const KDNodePtr &, const KDNodePtr &);
     ~KDNode();
 
     // getter
@@ -67,13 +69,23 @@ class comparer {
         const std::pair< std::vector< double >, size_t > &,  //
         const std::pair< std::vector< double >, size_t > &   //
     );
+    inline bool compare_idx_n(
+        const pointNormalIndex &,  //
+        const pointNormalIndex &   //
+    );
 };
 
 using pointIndexArr = typename std::vector< pointIndex >;
+using pointNormalIndexArr = typename std::vector< pointNormalIndex >;
 
 inline void sort_on_idx(const pointIndexArr::iterator &,  //
                         const pointIndexArr::iterator &,  //
                         size_t idx);
+
+inline void sort_on_idx_n(const pointNormalIndexArr::iterator &,  //
+                        const pointNormalIndexArr::iterator &,  //
+                        size_t idx);
+
 
 using pointVec = std::vector< point_t >;
 
@@ -83,6 +95,12 @@ class KDTree {
 
     KDNodePtr make_tree(const pointIndexArr::iterator &begin,  //
                         const pointIndexArr::iterator &end,    //
+                        const size_t &length,                  //
+                        const size_t &level                    //
+    );
+
+    KDNodePtr make_tree_n(const pointNormalIndexArr::iterator &begin,  //
+                        const pointNormalIndexArr::iterator &end,    //
                         const size_t &length,                  //
                         const size_t &level                    //
     );
@@ -129,4 +147,9 @@ class KDTree {
     indexArr neighborhood_indices(  //
         const point_t &pt,          //
         const double &rad);
+
+   private:
+    void print_node_(KDNodePtr &node);
+   public:
+    void print_tree();
 };
