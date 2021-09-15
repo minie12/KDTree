@@ -75,8 +75,20 @@ class comparer {
     );
 };
 
+class comparerD{
+    public:
+     point_t pt;
+     explicit comparerD(point_t pt_);
+     inline bool compare_dist(const pointIndex &, const pointIndex &);
+};
+
 using pointIndexArr = typename std::vector< pointIndex >;
 using pointNormalIndexArr = typename std::vector< pointNormalIndex >;
+
+inline void sort_on_dist(const pointIndexArr::iterator &,  //
+                         const pointIndexArr::iterator &, 
+                         point_t pt);
+
 
 inline void sort_on_idx(const pointIndexArr::iterator &,  //
                         const pointIndexArr::iterator &,  //
@@ -150,6 +162,13 @@ class KDTree {
 
    private:
     void print_node_(KDNodePtr &node);
+    pointIndexArr nearest4_(           //
+        const KDNodePtr &branch,  //
+        const point_t &pt,        //
+        const double &worst_dist,   //
+        const size_t &level      //    //
+    );
    public:
     void print_tree();
+    point_t surface_normal(point_t &pt);
 };
