@@ -87,8 +87,10 @@ int main() {
 
   tree.print_tree();
 
-  std::cout << "\nnearest test\n";
   point_t pt = {0.0, 0.0, 3.0};
+  std::cout << "\npoint: " << pt[0] << " " << pt[1] << " " <<pt[2] << std::endl;
+
+  std::cout << "\nnearest test\n";
   auto res = tree.nearest_point(pt);
   for (double b : res) {
       std::cout << b << " ";
@@ -102,6 +104,9 @@ int main() {
       }
       std::cout << '\n';
   }
+
+  std::cout << "\nsurface normal\n";
+  auto res3 = tree.surface_normal(pt);
 
   return 0;
 }
