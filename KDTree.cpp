@@ -124,6 +124,27 @@ inline void sort_on_idx_n(const pointNormalIndexArr::iterator &begin,  //
                      end, std::bind(&comparer::compare_idx_n, comp, _1, _2));
 }
 
+
+comparerD::comparerD(point_t pt_) : pt{pt_} {};
+
+inline bool comparerD::compare_dist(const pointIndex &a, const pointIndex &b){
+    point_t a1 = a.first;
+    point_t b1 = b.first;
+    return dist2(pt, a1) < dist2(pt, b1);
+}
+
+inline void sort_on_dist(const pointIndexArr::iterator &begin,  //
+                         const pointIndexArr::iterator &end, 
+                         point_t pt){
+    comparerD compD(pt);
+    compD.pt = pt;
+
+    using std::placeholders::_1;
+    using std::placeholders::_2;
+
+    std::sort(begin, end, std::bind(&comparerD::compare_dist, compD, _1, _2));
+}
+
 using pointVec = std::vector< point_t >;
 
 KDNodePtr KDTree::make_tree(const pointIndexArr::iterator &begin,  //
@@ -417,21 +438,101 @@ indexArr KDTree::neighborhood_indices(  //
 void KDTree::print_node_(KDNodePtr &node){
     point_t vertex = node->x;
     std::cout << "vertex(" << node->index << "):";
-    for(int i = 0; i < vertex.size(); i++) std::cout << " " << vertex[i];
+    for(size_t i = 0; i < vertex.size(); i++) std::cout << " " << vertex[i];
 
     point_t normal = node->n;
     if(!normal.empty()){
         std::cout << ", normal:";
-        for(int i = 0; i < normal.size(); i++) std::cout << " " << normal[i];
+        for(size_t i = 0; i < normal.size(); i++) std::cout << " " << normal[i];
     }
     std::cout << std::endl;
 
     
     if(!node->left->x.empty()) print_node_(node->left);
-    if(!node->right->x.empty()) print_node_(node->right);
+    if(!node->right->x.empty())print_node_(node->right);
 }
 
 void KDTree::print_tree(){
     std::cout << "####Printing KD-Tree: " << std::endl;
     print_node_(root);
+}
+
+pointIndexArr KDTree::nearest4_(  //
+    const KDNodePtr &branch,          //
+    const point_t &pt,  
+    const double &worst_dist,          //
+    const size_t &level
+) {
+    double d, dx, dx2;
+
+    if (!bool(*branch)) {
+        // branch has no point, means it is a leaf,
+        // no points to add
+        return pointIndexArr();
+    }
+
+    size_t dim = pt.size();
+
+    double worst_dist_l = worst_dist;
+
+    d = dist2(point_t(*branch), pt);
+    dx = point_t(*branch).at(level) - pt.at(level);
+    dx2 = dx * dx;
+
+    point_t tempp = point_t(*branch);
+    std::cout << tempp[0] << " " << tempp[1] << " " << tempp[2];
+    std::cout << ", distance: " << d << std::endl;
+
+    if(worst_dist < d) worst_dist_l = d;
+
+    pointIndexArr nbh, nbh_s, nbh_o;
+    nbh.push_back(pointIndex(*branch));
+
+    //
+    KDNodePtr section;
+    KDNodePtr other;
+    if (dx > 0) {
+        section = branch->left;
+        other = branch->right;
+    } else {
+        section = branch->right;
+        other = branch->left;
+    }
+
+    nbh_s = nearest4_(section, pt, worst_dist_l, (level + 1) % dim);
+    nbh.insert(nbh.end(), nbh_s.begin(), nbh_s.end());
+    if (dx2 < worst_dist) {
+        nbh_o = nearest4_(other, pt, worst_dist_l, (level + 1) % dim);
+        nbh.insert(nbh.end(), nbh_o.begin(), nbh_o.end());
+    }
+
+    sort_on_dist(nbh.begin(), nbh.end(), pt);
+    while(nbh.size() > 4) nbh.pop_back();
+
+    return nbh;
+};
+
+point_t KDTree::surface_normal(point_t &pt){
+    point_t sn;
+
+    double branch_dist = dist2(point_t(*root), pt);
+
+    // find 4 nearest points
+    pointIndexArr nbh = nearest4_(root, pt, branch_dist, 0);
+    pointVec nbhp;
+    nbhp.resize(nbh.size());
+    std::transform(nbh.begin(), nbh.end(), nbhp.begin(),
+                   [](pointIndex x) { return x.first; });
+    
+    // bilinear interpolation
+    std::cout << "\n\n";
+    for (point_t a : nbhp) {
+        for (double b : a) {
+            std::cout << b << " ";
+        }
+        std::cout << ", dist: " << dist2(pt,a);
+        std::cout << '\n';
+    }
+
+    return sn;
 }
