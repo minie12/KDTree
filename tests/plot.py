@@ -32,7 +32,7 @@ class Surface:
         except:
             print("Error opening the file")
 
-def plot_faces (faces, ax, plot_normal = True):
+def plot_faces (faces, ax, plot_normals = True):
     for face in faces:
         face['vertex'].append(face['vertex'][0])
         face['normal'].append(face['normal'][0])
@@ -43,14 +43,14 @@ def plot_faces (faces, ax, plot_normal = True):
             xs.append(vertex[0])
             ys.append(vertex[1])
             zs.append(vertex[2])
-            if plot_normal:
-                plot_normals (vertex, normal, ax)
+            if plot_normals:
+                plot_normal (vertex, normal, ax)
 
         ax.plot(xs,ys,zs,color='black',linewidth='0.5')
         plt.ion()
         plt.draw()
 
-def plot_normals (vertex, normal, ax):
+def plot_normal (vertex, normal, ax):
     p1 = vertex
     p2 = list(np.array(vertex) + np.array(normal)*SCALE)
     xs = [p1[0], p2[0]]
