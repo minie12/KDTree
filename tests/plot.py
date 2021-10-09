@@ -73,9 +73,14 @@ if __name__ == "__main__":
     ax.grid(False)
     SCALE = 0.3 # normal drawing scale
 
-    plot_faces(surf.faces, ax)
+    plot_faces(surf.faces, ax, False)
 
-    ax.auto_scale_xyz([-3, 3], [-2.5, 2.5], [-1, 4])
-    plt.show(block=False)
+    pt = [0.111664, -0.75, 1]
+    normal= [-0.804634, -0.447136, 0]
+    ax.scatter(pt[0],pt[1],pt[2])
+    plot_normal(pt, normal, ax)
+
+    ax.auto_scale_xyz([-1.5, 1.5], [-1.5, 1.5], [0, 3])
+    plt.show(block=True)
 
 

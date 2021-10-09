@@ -19,13 +19,17 @@
 using point_t = std::vector< double >;
 using indexArr = std::vector< size_t >;
 using pointIndex = typename std::pair< std::vector< double >, size_t >;
+// using pointNormalIndex = typename std::pair< pointIndex , std::vector< double > >;
+using pointNormalIndex = typename std::tuple< pointIndex , pointIndex, pointIndex >;  // (vertex, sn1, sn2)
+
 
 class KDNode {
    public:
     using KDNodePtr = std::shared_ptr< KDNode >;
     size_t index;
     point_t x;  // vertex
-    point_t n;  // vertex normal
+    pointIndex sn1;  // surface normal
+    pointIndex sn2;  // surface normal
     KDNodePtr left;
     KDNodePtr right;
 
@@ -34,6 +38,7 @@ class KDNode {
     KDNode(const point_t &, const size_t &, const KDNodePtr &,
            const KDNodePtr &);
     KDNode(const pointIndex &, const KDNodePtr &, const KDNodePtr &);
+    KDNode(const pointNormalIndex &, const KDNodePtr &, const KDNodePtr &, const int);
     ~KDNode();
 
     // getter
@@ -67,13 +72,23 @@ class comparer {
         const std::pair< std::vector< double >, size_t > &,  //
         const std::pair< std::vector< double >, size_t > &   //
     );
+    inline bool compare_idx_n(
+        const pointNormalIndex &,  //
+        const pointNormalIndex &   //
+    );
 };
 
 using pointIndexArr = typename std::vector< pointIndex >;
+using pointNormalIndexArr = typename std::vector< pointNormalIndex >;
 
 inline void sort_on_idx(const pointIndexArr::iterator &,  //
                         const pointIndexArr::iterator &,  //
                         size_t idx);
+
+inline void sort_on_idx_n(const pointNormalIndexArr::iterator &,  //
+                        const pointNormalIndexArr::iterator &,  //
+                        size_t idx);
+
 
 using pointVec = std::vector< point_t >;
 
@@ -87,10 +102,17 @@ class KDTree {
                         const size_t &level                    //
     );
 
+    KDNodePtr make_tree_n(const pointNormalIndexArr::iterator &begin,  //
+                        const pointNormalIndexArr::iterator &end,    //
+                        const size_t &length,                  //
+                        const size_t &level,                    //
+                        const int max
+    );
+
    public:
     KDTree() = default;
     explicit KDTree(pointVec point_array);
-    explicit KDTree(pointVec point_array, pointVec normal_array);
+    explicit KDTree(pointVec point_array, pointIndexArr surface_n, int max);
 
    private:
     KDNodePtr nearest_(           //
@@ -129,4 +151,17 @@ class KDTree {
     indexArr neighborhood_indices(  //
         const point_t &pt,          //
         const double &rad);
+
+   private:
+    void print_node_(KDNodePtr &node);
+    KDNodePtr sn_nearest_(const KDNodePtr &branch,  //
+                        const point_t &pt,        //
+                        const size_t &level,      //
+                        const KDNodePtr &best,    //
+                        const double &best_dist   //
+                        );
+   public:
+    void print_tree();
+    int find_sn_index(const point_t &pt);
+
 };
